@@ -23,7 +23,6 @@ const socketStore = useSocketStore();
 const { sentLoginMessage, handleMessage } = socketStore;
 
 onMounted(() => {
-	sentLoginMessage();
 	handleMessage();
 });
 </script>

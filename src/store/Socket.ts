@@ -45,6 +45,7 @@ export const useSocketStore = defineStore("socket", () => {
 
 	ws.onopen = async () => {
 		setPlayerId();
+		sentLoginMessage();
 		console.log("open connection");
 	};
 
