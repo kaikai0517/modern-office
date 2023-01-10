@@ -1,5 +1,5 @@
 <template>
-	<n-page-header subtitle="虛擬辦公室" @back="handleBack" class="px-5 py-5">
+	<n-page-header subtitle="虛擬辦公室" class="px-5 py-5">
 		<template #title>
 			<a
 				href="https://github.com/kaikai0517/modern-office"
@@ -22,7 +22,13 @@
 					:key="item.WebRTCId"
 					@click="connect(item.WebRTCId)"
 				>
-					{{ item.name }} {{ item.WebRTCId }}
+					<div class="flex gap-3 justify-between items-center">
+						<div>
+							<div>{{ item.name }}</div>
+							<div>{{ item.WebRTCId }}</div>
+						</div>
+						<n-badge :value="messageUnreadCounts(item.WebRTCId)"> </n-badge>
+					</div>
 				</n-list-item>
 			</n-list>
 		</n-drawer-content>
@@ -59,6 +65,7 @@ import {
 	NList,
 	NListItem,
 	NInput,
+	NBadge,
 } from "naive-ui";
 import type { DrawerPlacement } from "naive-ui";
 import { storeToRefs } from "pinia";
@@ -107,7 +114,9 @@ const connect = (id: string) => {
 	handleConnectButtonClick(id);
 	currentConnect.value = id;
 	openInner.value = true;
+	readAllMessage();
 };
+
 const message = ref<string | undefined>(undefined);
 
 const messageFilterById = computed(() => {
@@ -115,14 +124,26 @@ const messageFilterById = computed(() => {
 		return message.id === currentConnect.value;
 	});
 });
+
+const messageUnreadCounts = (id: string) => {
+	return messages.value.filter((message) => {
+		return message.id === id && message.type !== "notify" && !message.read;
+	}).length;
+};
+
+const readAllMessage = () => {
+	messageFilterById.value.forEach((message) => {
+		message.read = true;
+	});
+};
 const sendMessage = () => {
 	handleSendMessageButtonClick(message.value);
+	message.value = "";
 };
 
 const OpenMessage = () => {
 	openOuter.value = true;
 };
-const handleBack = () => {};
 </script>
 
 <style></style>

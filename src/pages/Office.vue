@@ -8,6 +8,9 @@
 		<div class="fixed bottom-[3%] left-[3%]">
 			<LocalVideo></LocalVideo>
 		</div>
+		<div class="fixed bottom-[3%] right-[3%]">
+			<Chat></Chat>
+		</div>
 	</div>
 </template>
 
@@ -16,15 +19,29 @@ import Canva from "../components/Canva.vue";
 import WebRTC from "../components/WebRTC.vue";
 import LocalVideo from "../components/LocalVideo.vue";
 import RemoteVideo from "../components/RemoteVideo.vue";
+import Chat from "../components/Chat.vue";
 import { useSocketStore } from "../store/Socket";
+import { storeToRefs } from "pinia";
+import { useWebRTCStore } from "../store/WebRTC";
 
 // socketStore
 const socketStore = useSocketStore();
-const { handleMessage } = socketStore;
+const { handleMessage, sendPlayer } = socketStore;
+
+// webRTCStore
+const webRTCStore = useWebRTCStore();
+const { WebRTCConnect } = storeToRefs(webRTCStore);
 
 onMounted(() => {
 	handleMessage();
 });
+
+watch(
+	() => WebRTCConnect.value,
+	() => {
+		sendPlayer();
+	}
+);
 </script>
 
 <style></style>

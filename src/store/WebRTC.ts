@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { Peer, DataConnection, MediaConnection } from "peerjs";
 import { useSocketStore } from "../store/Socket";
 import { storeToRefs } from "pinia";
-import { message } from "../model/schema";
+import { WebRTCMessage } from "../model/schema";
 
 export const useWebRTCStore = defineStore("WebRTC", () => {
 	const peer = ref<Peer | undefined>(undefined);
@@ -11,16 +11,17 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 	const { sendPlayer } = socketStore;
 	const localStream = ref();
 	const isConnect = ref(false);
-	const messages = ref<Array<message>>([]);
+	const messages = ref<Array<WebRTCMessage>>([]);
 	const currentConnection = ref<DataConnection | undefined>(undefined);
 	const localVideo = ref<HTMLVideoElement | undefined>(undefined);
 	const remoteVideo = ref<HTMLVideoElement | undefined>(undefined);
 	const currentCall = ref<MediaConnection | undefined>(undefined);
+	const WebRTCConnect = ref(false);
 
 	// 監聽 peer 開啟通道
 	const handleOpen = (id: string) => {
 		localPlayer.value.WebRTCId = id;
-		sendPlayer();
+		WebRTCConnect.value = true;
 	};
 
 	// 監聽 peer 資料連線開啟
@@ -30,6 +31,7 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 				id: currentConnection.value?.peer,
 				type: "notify",
 				message: `已與遠端 ${currentConnection.value?.peer} 進行資料連線`,
+				read: true,
 			});
 		}
 	};
@@ -41,6 +43,7 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 				id: currentConnection.value?.peer,
 				type: "remote",
 				message: `${data}`,
+				read: false,
 			});
 		}
 	};
@@ -122,6 +125,7 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 				id: currentConnection.value?.peer,
 				type: "local",
 				message: `${message}`,
+				read: true,
 			});
 		}
 	};
@@ -132,7 +136,6 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 		isConnect.value = true;
 		// 與遠端進行通話
 		currentCall.value = peer.value?.call(id, localStream.value);
-		console.log(currentCall.value);
 		currentCall.value?.on("stream", handleMediaConnectStream);
 		currentCall.value?.on("close", handleMediaConnectClose);
 	};
@@ -170,5 +173,6 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 		isConnect,
 		currentCall,
 		messages,
+		WebRTCConnect,
 	};
 });

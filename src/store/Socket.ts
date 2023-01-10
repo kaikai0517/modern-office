@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { useMessage } from "naive-ui";
+import { SocketMessage } from "../model/schema";
 
 export const useSocketStore = defineStore("socket", () => {
 	interface player {
@@ -33,6 +34,8 @@ export const useSocketStore = defineStore("socket", () => {
 	});
 	const remotePlayers = ref<Array<player>>([]);
 
+	const messages = ref<Array<SocketMessage>>([]);
+
 	const onLine = ref(true);
 
 	const SocketOn = ref(false);
@@ -48,6 +51,7 @@ export const useSocketStore = defineStore("socket", () => {
 	ws.onopen = async () => {
 		setPlayerId();
 		sentLoginMessage();
+		sendPlayer();
 		SocketOn.value = true;
 		console.log("open connection");
 	};
@@ -62,7 +66,7 @@ export const useSocketStore = defineStore("socket", () => {
 	};
 
 	const sentLoginMessage = () => {
-		ws.send(JSON.stringify({ message: `${localPlayer.value.id} Login` }));
+		ws.send(JSON.stringify({ login: `${localPlayer.value.id} Login` }));
 	};
 
 	const OffLine = () => {
@@ -113,6 +117,16 @@ export const useSocketStore = defineStore("socket", () => {
 		ws.send(data);
 	};
 
+	const sendAllMessages = (message: string) => {
+		ws.send(
+			JSON.stringify({
+				message,
+				name: localPlayer.value.name,
+				id: localPlayer.value.id,
+			})
+		);
+	};
+
 	const handleMessage = () => {
 		//接收 Server 發送的訊息
 		ws.onmessage = (event) => {
@@ -123,9 +137,11 @@ export const useSocketStore = defineStore("socket", () => {
 			reader.onload = function (e) {
 				if (typeof reader.result === "string") {
 					const data = JSON.parse(reader.result);
-					if (data.message) {
+					if (data.login) {
 						sendPlayer();
-						message.success(data.message, { keepAliveOnHover: true });
+						message.success(data.login, { keepAliveOnHover: true });
+					} else if (data.message) {
+						messages.value.push(data);
 					} else {
 						setPlayer(data);
 					}
@@ -139,10 +155,13 @@ export const useSocketStore = defineStore("socket", () => {
 		sentLoginMessage,
 		OffLine,
 		handleMessage,
+		sendAllMessages,
+		isLocal,
 		localPlayer,
 		remotePlayers,
 		remotePlayerMap,
 		isTypingName,
 		SocketOn,
+		messages,
 	};
 });

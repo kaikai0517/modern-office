@@ -35,10 +35,17 @@ export interface keys {
 	right: movement;
 }
 
-export interface message {
+export interface WebRTCMessage {
 	id: string;
 	message: string;
 	type: MessageType;
+	read: boolean;
+}
+
+export interface SocketMessage {
+	name: string;
+	message: string;
+	id: string;
 }
 
 export type MessageType = "local" | "remote" | "notify";
