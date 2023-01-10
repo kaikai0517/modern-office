@@ -25,18 +25,24 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 
 	// 監聽 peer 資料連線開啟
 	const handleDataConnectionOpen = () => {
-		messages.value.push({
-			type: "notify",
-			message: `已與遠端 ${currentConnection.value?.peer} 進行資料連線`,
-		});
+		if (currentConnection.value) {
+			messages.value.push({
+				id: currentConnection.value?.peer,
+				type: "notify",
+				message: `已與遠端 ${currentConnection.value?.peer} 進行資料連線`,
+			});
+		}
 	};
 
 	// 監聽 peer 資料連線接收到的資訊
 	const handleDataConnectionData = (data: unknown, context?: any) => {
-		messages.value.push({
-			type: "remote",
-			message: `${data}`,
-		});
+		if (currentConnection.value) {
+			messages.value.push({
+				id: currentConnection.value?.peer,
+				type: "remote",
+				message: `${data}`,
+			});
+		}
 	};
 
 	// 監聽 peer 通話連線接收到的串流
@@ -113,13 +119,9 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 		if (currentConnection.value) {
 			currentConnection.value.send(message);
 			messages.value.push({
+				id: currentConnection.value?.peer,
 				type: "local",
 				message: `${message}`,
-			});
-		} else {
-			messages.value.push({
-				type: "notify",
-				message: `尚未進行連線`,
 			});
 		}
 	};

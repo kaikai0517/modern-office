@@ -30,7 +30,7 @@
 	<n-drawer v-model:show="openInner" :width="502" :placement="placement">
 		<n-drawer-content :title="currentConnect" :native-scrollbar="false">
 			<n-list :show-divider="false">
-				<n-list-item v-for="item in messages" :key="item.message">
+				<n-list-item v-for="item in messageFilterById" :key="item.message">
 					<div :class="messageStyle(item.type)">{{ item.message }}</div>
 				</n-list-item>
 			</n-list>
@@ -109,6 +109,12 @@ const connect = (id: string) => {
 	openInner.value = true;
 };
 const message = ref<string | undefined>(undefined);
+
+const messageFilterById = computed(() => {
+	return messages.value.filter((message) => {
+		return message.id === currentConnect.value;
+	});
+});
 const sendMessage = () => {
 	handleSendMessageButtonClick(message.value);
 };

@@ -36,6 +36,7 @@ export interface keys {
 }
 
 export interface message {
+	id: string;
 	message: string;
 	type: MessageType;
 }
