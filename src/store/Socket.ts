@@ -101,7 +101,6 @@ export const useSocketStore = defineStore("socket", () => {
 		} else if (!remotePlayerMap.value.has(player.id)) {
 			setNewPlayer(player);
 		} else {
-			console.log(remotePlayerMap.value, player);
 			setCurrentPlayer(player);
 		}
 	};

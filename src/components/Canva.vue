@@ -35,7 +35,6 @@ interface Player {
 	positionY: number;
 	width: number;
 	height: number;
-	image: HTMLImageElement;
 	currentMovement: {
 		moveTimes: number;
 		move: number;
@@ -118,13 +117,13 @@ const STARTWITHY = () => {
 
 // 圖片裡人物數量
 const PERSONNUMS = 24;
+
 // 人物物件
 const player: Player = reactive({
 	positionX: STARTWITHX(),
 	positionY: STARTWITHY(),
-	width: playerImage.width / PERSONNUMS,
-	height: playerImage.height,
-	image: new Image(),
+	width: computed(() => playerImage.width / PERSONNUMS),
+	height: computed(() => playerImage.height),
 	currentMovement: {
 		moveTimes: 0,
 		move: computed<number>(
@@ -153,10 +152,6 @@ const isTouchBoundary = (boundary: boundary) => {
 	);
 };
 
-watch(player, () => {
-	localPlayer.value.player = player;
-});
-
 onMounted(() => {
 	// 初始化canvas
 	const canvas = document.querySelector("canvas") as HTMLCanvasElement;
@@ -167,11 +162,11 @@ onMounted(() => {
 	localPlayer.value.player = player;
 
 	// 設定障礙物顏色 *用來檢查位置,平時不顯示
-	const fillBoundariesStyle = (boundary: boundary) => {
-		const BOUNDARIESCOLOR = "rgba(255, 0, 0,0.2)";
-		c.fillStyle = BOUNDARIESCOLOR;
-		c.fillRect(boundary.x, boundary.y, BLOCKWIDTH, BLOCKHEIGHT);
-	};
+	// const fillBoundariesStyle = (boundary: boundary) => {
+	// 	const BOUNDARIESCOLOR = "rgba(255, 0, 0,0.2)";
+	// 	c.fillStyle = BOUNDARIESCOLOR;
+	// 	c.fillRect(boundary.x, boundary.y, BLOCKWIDTH, BLOCKHEIGHT);
+	// };
 
 	// 取得障礙物位置
 	const getBoundaries = () => {
@@ -239,19 +234,18 @@ onMounted(() => {
 		player: Player,
 		name: string
 	) => {
-		if (image) {
-			c.drawImage(
-				image,
-				player.currentMovement.move,
-				0,
-				player.width,
-				player.height,
-				player.positionX,
-				player.positionY,
-				player.width,
-				player.height
-			);
-		}
+		c.drawImage(
+			image,
+			player.currentMovement.move,
+			0,
+			player.width,
+			player.height,
+			player.positionX,
+			player.positionY,
+			player.width,
+			player.height
+		);
+
 		c.font = "10px Georgia ";
 		c.fillStyle = "black";
 		c.fillText(name, player.positionX + 7, player.positionY + 5);
@@ -275,10 +269,11 @@ onMounted(() => {
 		c.drawImage(image, 0, 0);
 		changeLocalPlayer();
 		getRemotePlayer();
-		getBoundaries().forEach((boundary) => {
-			fillBoundariesStyle(boundary);
-		});
 		move();
+	};
+
+	playerImage.onload = () => {
+		animate();
 	};
 
 	const KEYUPINDEX = 1;
@@ -308,6 +303,7 @@ onMounted(() => {
 			moveAnimation();
 			player.positionY -= 3;
 			if (SocketOn.value) {
+				localPlayer.value.player = player;
 				sendPlayer();
 			}
 		}
@@ -333,6 +329,7 @@ onMounted(() => {
 			moveAnimation();
 			player.positionX -= 3;
 			if (SocketOn.value) {
+				localPlayer.value.player = player;
 				sendPlayer();
 			}
 		}
@@ -359,6 +356,7 @@ onMounted(() => {
 			moveAnimation();
 			player.positionY += 3;
 			if (SocketOn.value) {
+				localPlayer.value.player = player;
 				sendPlayer();
 			}
 		}
@@ -385,6 +383,7 @@ onMounted(() => {
 			moveAnimation();
 			player.positionX += 3;
 			if (SocketOn.value) {
+				localPlayer.value.player = player;
 				sendPlayer();
 			}
 		}
@@ -402,7 +401,7 @@ onMounted(() => {
 		}
 	};
 
-	animate();
+	// animate();
 
 	const isKeyDown = (type: string) => {
 		return type === "keydown" ? true : false;

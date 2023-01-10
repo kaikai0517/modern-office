@@ -1,6 +1,6 @@
 <template>
 	<div v-show="isConnect">
-		<video width="200" height="200" autoPlay ref="remoteVideo" muted />
+		<video width="200" height="200" autoPlay ref="remoteVideo" />
 		<div class="text-white">Remote</div>
 	</div>
 </template>
