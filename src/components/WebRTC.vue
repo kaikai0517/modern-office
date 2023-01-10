@@ -7,7 +7,7 @@
 		</div>
 		<div class="flex gap-5">
 			<div class="flex gap-5" v-if="isConnect">
-				<NButton type="error" @click="handleEndCallButtonClick"> End </NButton>
+				<NButton type="error" @click="EndCall"> End </NButton>
 			</div>
 		</div>
 		<div class="space-y-2">
@@ -36,8 +36,9 @@ import { useSocketStore } from "../store/Socket";
 const socketStore = useSocketStore();
 const { localPlayer, isTypingName } = storeToRefs(socketStore);
 
+// WebRTCStore
 const webRTCStore = useWebRTCStore();
-const { handleEndCallButtonClick, createPeer, destroyPeer } = webRTCStore;
+const { EndCall, createPeer, destroyPeer } = webRTCStore;
 const { isConnect } = storeToRefs(webRTCStore);
 
 onMounted(() => {
@@ -50,10 +51,6 @@ onUnmounted(() => {
 </script>
 
 <style>
-.n-progress-text {
-	color: white !important;
-}
-
 video {
 	transform: scaleX(-1);
 }

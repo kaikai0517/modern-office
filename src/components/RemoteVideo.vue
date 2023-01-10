@@ -1,6 +1,11 @@
 <template>
 	<div v-show="isConnect">
-		<video width="200" height="200" autoPlay ref="remoteVideo" />
+		<video
+			:width="VIDEOWIDTH"
+			:height="VIDEOHEIGHT"
+			autoPlay
+			ref="remoteVideo"
+		/>
 		<div class="text-white">Remote</div>
 	</div>
 </template>
@@ -10,6 +15,9 @@ import { useWebRTCStore } from "../store/WebRTC";
 import { storeToRefs } from "pinia";
 const webRTCStore = useWebRTCStore();
 const { remoteVideo, isConnect } = storeToRefs(webRTCStore);
+
+const VIDEOWIDTH = "200";
+const VIDEOHEIGHT = "200";
 </script>
 
 <style></style>

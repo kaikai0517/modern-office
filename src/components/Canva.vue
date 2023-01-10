@@ -10,6 +10,7 @@ import { collusions } from "../data/collusions";
 import { useSocketStore } from "../store/Socket";
 import { storeToRefs } from "pinia";
 import { useWebRTCStore } from "../store/WebRTC";
+import { boundary, player, PlayerInfo, keys } from "../model/schema";
 
 // socketStore
 const socketStore = useSocketStore();
@@ -19,44 +20,7 @@ const { localPlayer, remotePlayerMap, isTypingName, SocketOn } =
 
 // webRTCStore
 const webRTCStore = useWebRTCStore();
-const { handleEndCallButtonClick, handleCallButtonClick } = webRTCStore;
-
-interface boundary {
-	x: number;
-	y: number;
-}
-
-interface movement {
-	pressed: boolean;
-}
-
-interface Player {
-	positionX: number;
-	positionY: number;
-	width: number;
-	height: number;
-	currentMovement: {
-		moveTimes: number;
-		move: number;
-	};
-}
-
-interface player {
-	id: string;
-	WebRTCId: string;
-	onLine: boolean;
-	image: HTMLImageElement;
-	name: string;
-	player: Player;
-}
-
-interface keys {
-	index: number;
-	up: movement;
-	left: movement;
-	down: movement;
-	right: movement;
-}
+const { EndCall, AnwserCall } = webRTCStore;
 
 // 像素寬高
 const BLOCKWIDTH = 16;
@@ -95,20 +59,17 @@ const keys: keys = reactive({
 	},
 });
 
-// 圖片裡人物移動總次數
-const PERSONMOVEMENTTIMES = 6;
-
 const getRandom = (max: number, min: number) => {
 	return Math.floor(Math.random() * (max - min) + min);
 };
 
-// 人物起始位置
+// 人物起始位置x
 const STARTWITHX = () => {
 	const RANGESTART = 23;
 	const RANGEEND = 27;
 	return BLOCKWIDTH * getRandom(RANGEEND, RANGESTART);
 };
-
+// 人物起始位置y
 const STARTWITHY = () => {
 	const RANGESTART = 5;
 	const RANGEEND = 7;
@@ -118,8 +79,11 @@ const STARTWITHY = () => {
 // 圖片裡人物數量
 const PERSONNUMS = 24;
 
+// 圖片裡人物移動總次數
+const PERSONMOVEMENTTIMES = 6;
+
 // 人物物件
-const player: Player = reactive({
+const player: PlayerInfo = reactive({
 	positionX: STARTWITHX(),
 	positionY: STARTWITHY(),
 	width: computed(() => playerImage.width / PERSONNUMS),
@@ -168,12 +132,15 @@ onMounted(() => {
 	// 	c.fillRect(boundary.x, boundary.y, BLOCKWIDTH, BLOCKHEIGHT);
 	// };
 
+	// 障礙物參數
+	const BOUNDARYINDEX = 628;
+
 	// 取得障礙物位置
 	const getBoundaries = () => {
 		const boundaries: Array<boundary> = [];
 		cutBoundariesMap().forEach((row, i) => {
 			row.forEach((item, j) => {
-				if (item === 100) {
+				if (item === BOUNDARYINDEX) {
 					const boundary = {
 						x: j * BLOCKWIDTH,
 						y: i * BLOCKHEIGHT,
@@ -231,7 +198,7 @@ onMounted(() => {
 	// 更動遠端人物
 	const changeRemotePlayer = (
 		image: HTMLImageElement,
-		player: Player,
+		player: PlayerInfo,
 		name: string
 	) => {
 		c.drawImage(
@@ -290,11 +257,11 @@ onMounted(() => {
 			}
 		});
 		remotePlayerMap.value.forEach(
-			({ player, WebRTCId }: { player: Player; WebRTCId: string }) => {
+			({ player, WebRTCId }: { player: PlayerInfo; WebRTCId: string }) => {
 				if (isTouchBoundary({ x: player.positionX, y: player.positionY + 3 })) {
-					if (WebRTCId) handleCallButtonClick(WebRTCId);
+					if (WebRTCId) AnwserCall(WebRTCId);
 				} else {
-					handleEndCallButtonClick();
+					EndCall();
 				}
 			}
 		);
@@ -317,11 +284,11 @@ onMounted(() => {
 			}
 		});
 		remotePlayerMap.value.forEach(
-			({ player, WebRTCId }: { player: Player; WebRTCId: string }) => {
+			({ player, WebRTCId }: { player: PlayerInfo; WebRTCId: string }) => {
 				if (isTouchBoundary({ x: player.positionX + 3, y: player.positionY })) {
-					if (WebRTCId) handleCallButtonClick(WebRTCId);
+					if (WebRTCId) AnwserCall(WebRTCId);
 				} else {
-					handleEndCallButtonClick();
+					EndCall();
 				}
 			}
 		);
@@ -343,11 +310,11 @@ onMounted(() => {
 			}
 		});
 		remotePlayerMap.value.forEach(
-			({ player, WebRTCId }: { player: Player; WebRTCId: string }) => {
+			({ player, WebRTCId }: { player: PlayerInfo; WebRTCId: string }) => {
 				if (isTouchBoundary({ x: player.positionX, y: player.positionY - 3 })) {
-					if (WebRTCId) handleCallButtonClick(WebRTCId);
+					if (WebRTCId) AnwserCall(WebRTCId);
 				} else {
-					handleEndCallButtonClick();
+					EndCall();
 				}
 			}
 		);
@@ -371,11 +338,11 @@ onMounted(() => {
 		});
 
 		remotePlayerMap.value.forEach(
-			({ player, WebRTCId }: { player: Player; WebRTCId: string }) => {
+			({ player, WebRTCId }: { player: PlayerInfo; WebRTCId: string }) => {
 				if (isTouchBoundary({ x: player.positionX + 3, y: player.positionY })) {
-					if (WebRTCId) handleCallButtonClick(WebRTCId);
+					if (WebRTCId) AnwserCall(WebRTCId);
 				} else {
-					handleEndCallButtonClick();
+					EndCall();
 				}
 			}
 		);

@@ -20,7 +20,7 @@ import { useSocketStore } from "../store/Socket";
 
 // socketStore
 const socketStore = useSocketStore();
-const { sentLoginMessage, handleMessage } = socketStore;
+const { handleMessage } = socketStore;
 
 onMounted(() => {
 	handleMessage();

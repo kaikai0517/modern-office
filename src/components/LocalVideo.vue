@@ -1,18 +1,25 @@
 <template>
+	<!-- 本地視頻 -->
 	<div v-show="isConnect">
 		<div class="text-white">Local</div>
-		<video width="200" height="200" autoPlay ref="localVideo" muted />
+		<video
+			:width="VIDEOWIDTH"
+			:height="VIDEOHEIGHT"
+			autoPlay
+			ref="localVideo"
+			muted
+		/>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { useWebRTCStore } from "../store/WebRTC";
 import { storeToRefs } from "pinia";
-import { useSocketStore } from "../store/Socket";
+
+const VIDEOWIDTH = "200";
+const VIDEOHEIGHT = "200";
 
 // socketStore
-const socketStore = useSocketStore();
-const { localPlayer } = storeToRefs(socketStore);
 const webRTCStore = useWebRTCStore();
 const { localVideo, isConnect } = storeToRefs(webRTCStore);
 </script>
