@@ -40,6 +40,15 @@ interface Player {
 	};
 }
 
+interface player {
+	id: string;
+	WebRTCId: string;
+	onLine: boolean;
+	image: HTMLImageElement;
+	name: string;
+	player: Player;
+}
+
 interface keys {
 	index: number;
 	up: movement;
@@ -217,19 +226,9 @@ onMounted(() => {
 	};
 
 	const getRemotePlayer = () => {
-		remotePlayerMap.value.forEach(
-			({
-				image,
-				player,
-				name,
-			}: {
-				image: HTMLImageElement;
-				player: Player;
-				name: string;
-			}) => {
-				changeRemotePlayer(image, player, name);
-			}
-		);
+		remotePlayerMap.value.forEach((value: player) => {
+			changeRemotePlayer(value.image, value.player, value.name);
+		});
 	};
 
 	// 更動遠端人物

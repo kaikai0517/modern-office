@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col items-center min-w-[848px] h-full relative">
+	<div class="flex flex-col items-center min-w-[848px] h-screen relative">
 		<div class="fixed top-[3%] right-[3%]">
 			<RemoteVideo></RemoteVideo>
 		</div>
