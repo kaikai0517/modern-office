@@ -20,7 +20,6 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 	// 監聽 peer 開啟通道
 	const handleOpen = (id: string) => {
 		localPlayer.value.WebRTCId = id;
-		sendPlayer();
 	};
 
 	// 監聽 peer 資料連線開啟
@@ -118,7 +117,6 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 
 	// 監聽視訊通話按鈕點擊
 	const handleCallButtonClick = async (id: string) => {
-		console.log(isConnect.value, id);
 		if (isConnect.value) return;
 		isConnect.value = true;
 

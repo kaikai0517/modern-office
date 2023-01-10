@@ -14,7 +14,8 @@ import { useWebRTCStore } from "../store/WebRTC";
 // socketStore
 const socketStore = useSocketStore();
 const { sendPlayer } = socketStore;
-const { localPlayer, remotePlayerMap, isTypingName } = storeToRefs(socketStore);
+const { localPlayer, remotePlayerMap, isTypingName, SocketOn } =
+	storeToRefs(socketStore);
 
 // webRTCStore
 const webRTCStore = useWebRTCStore();
@@ -34,6 +35,7 @@ interface Player {
 	positionY: number;
 	width: number;
 	height: number;
+	image: HTMLImageElement;
 	currentMovement: {
 		moveTimes: number;
 		move: number;
@@ -122,6 +124,7 @@ const player: Player = reactive({
 	positionY: STARTWITHY(),
 	width: playerImage.width / PERSONNUMS,
 	height: playerImage.height,
+	image: new Image(),
 	currentMovement: {
 		moveTimes: 0,
 		move: computed<number>(
@@ -152,7 +155,6 @@ const isTouchBoundary = (boundary: boundary) => {
 
 watch(player, () => {
 	localPlayer.value.player = player;
-	sendPlayer();
 });
 
 onMounted(() => {
@@ -305,6 +307,9 @@ onMounted(() => {
 		if (moving) {
 			moveAnimation();
 			player.positionY -= 3;
+			if (SocketOn.value) {
+				sendPlayer();
+			}
 		}
 	};
 	const handleMoveLeft = () => {
@@ -327,6 +332,9 @@ onMounted(() => {
 		if (moving) {
 			moveAnimation();
 			player.positionX -= 3;
+			if (SocketOn.value) {
+				sendPlayer();
+			}
 		}
 	};
 	const handleMoveDown = () => {
@@ -350,6 +358,9 @@ onMounted(() => {
 		if (moving) {
 			moveAnimation();
 			player.positionY += 3;
+			if (SocketOn.value) {
+				sendPlayer();
+			}
 		}
 	};
 	const handleMoveRight = () => {
@@ -373,6 +384,9 @@ onMounted(() => {
 		if (moving) {
 			moveAnimation();
 			player.positionX += 3;
+			if (SocketOn.value) {
+				sendPlayer();
+			}
 		}
 	};
 	// 移動

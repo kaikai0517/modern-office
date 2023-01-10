@@ -35,6 +35,8 @@ export const useSocketStore = defineStore("socket", () => {
 
 	const onLine = ref(true);
 
+	const SocketOn = ref(false);
+
 	// 人物圖片位置
 	const PERSONSRC = "/canva/person/Adam_run_16x16.png";
 
@@ -46,10 +48,12 @@ export const useSocketStore = defineStore("socket", () => {
 	ws.onopen = async () => {
 		setPlayerId();
 		sentLoginMessage();
+		SocketOn.value = true;
 		console.log("open connection");
 	};
 
 	ws.onclose = () => {
+		SocketOn.value = false;
 		console.log("close connection");
 	};
 
@@ -94,10 +98,11 @@ export const useSocketStore = defineStore("socket", () => {
 		} else if (!player.onLine) {
 			remotePlayerMap.value.delete(player.id);
 			message.error(`${player.id} Logout`, { keepAliveOnHover: true });
-		} else if (remotePlayerMap.value.has(player.id)) {
-			setCurrentPlayer(player);
-		} else {
+		} else if (!remotePlayerMap.value.has(player.id)) {
 			setNewPlayer(player);
+		} else {
+			console.log(remotePlayerMap.value, player);
+			setCurrentPlayer(player);
 		}
 	};
 
@@ -139,5 +144,6 @@ export const useSocketStore = defineStore("socket", () => {
 		remotePlayers,
 		remotePlayerMap,
 		isTypingName,
+		SocketOn,
 	};
 });
