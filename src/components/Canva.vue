@@ -21,6 +21,7 @@ const { localPlayer, remotePlayerMap, isTypingName, SocketOn } =
 // webRTCStore
 const webRTCStore = useWebRTCStore();
 const { EndCall, AnwserCall } = webRTCStore;
+const { isConnect } = storeToRefs(webRTCStore);
 
 // 像素寬高
 const BLOCKWIDTH = 16;
@@ -256,15 +257,21 @@ onMounted(() => {
 				moving = false;
 			}
 		});
+		let bounderyWebRTCId = undefined;
 		remotePlayerMap.value.forEach(
 			({ player, WebRTCId }: { player: PlayerInfo; WebRTCId: string }) => {
 				if (isTouchBoundary({ x: player.positionX, y: player.positionY + 3 })) {
-					if (WebRTCId) AnwserCall(WebRTCId);
-				} else {
-					EndCall();
+					if (WebRTCId) {
+						bounderyWebRTCId = WebRTCId;
+					}
 				}
 			}
 		);
+		if (bounderyWebRTCId) {
+			AnwserCall(bounderyWebRTCId);
+		} else {
+			EndCall();
+		}
 
 		if (moving) {
 			moveAnimation();
@@ -283,15 +290,21 @@ onMounted(() => {
 				moving = false;
 			}
 		});
+		let bounderyWebRTCId = undefined;
 		remotePlayerMap.value.forEach(
 			({ player, WebRTCId }: { player: PlayerInfo; WebRTCId: string }) => {
 				if (isTouchBoundary({ x: player.positionX + 3, y: player.positionY })) {
-					if (WebRTCId) AnwserCall(WebRTCId);
-				} else {
-					EndCall();
+					if (WebRTCId) {
+						bounderyWebRTCId = WebRTCId;
+					}
 				}
 			}
 		);
+		if (bounderyWebRTCId) {
+			AnwserCall(bounderyWebRTCId);
+		} else {
+			EndCall();
+		}
 		if (moving) {
 			moveAnimation();
 			player.positionX -= 3;
@@ -309,15 +322,21 @@ onMounted(() => {
 				moving = false;
 			}
 		});
+		let bounderyWebRTCId = undefined;
 		remotePlayerMap.value.forEach(
 			({ player, WebRTCId }: { player: PlayerInfo; WebRTCId: string }) => {
 				if (isTouchBoundary({ x: player.positionX, y: player.positionY - 3 })) {
-					if (WebRTCId) AnwserCall(WebRTCId);
-				} else {
-					EndCall();
+					if (WebRTCId) {
+						bounderyWebRTCId = WebRTCId;
+					}
 				}
 			}
 		);
+		if (bounderyWebRTCId) {
+			AnwserCall(bounderyWebRTCId);
+		} else {
+			EndCall();
+		}
 
 		if (moving) {
 			moveAnimation();
@@ -336,16 +355,21 @@ onMounted(() => {
 				moving = false;
 			}
 		});
-
+		let bounderyWebRTCId = undefined;
 		remotePlayerMap.value.forEach(
 			({ player, WebRTCId }: { player: PlayerInfo; WebRTCId: string }) => {
 				if (isTouchBoundary({ x: player.positionX + 3, y: player.positionY })) {
-					if (WebRTCId) AnwserCall(WebRTCId);
-				} else {
-					EndCall();
+					if (WebRTCId) {
+						bounderyWebRTCId = WebRTCId;
+					}
 				}
 			}
 		);
+		if (bounderyWebRTCId) {
+			AnwserCall(bounderyWebRTCId);
+		} else {
+			EndCall();
+		}
 		if (moving) {
 			moveAnimation();
 			player.positionX += 3;
