@@ -8,7 +8,6 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 	const peer = ref<Peer | undefined>(undefined);
 	const socketStore = useSocketStore();
 	const { localPlayer } = storeToRefs(socketStore);
-	const { sendPlayer } = socketStore;
 	const localStream = ref();
 	const isConnect = ref(false);
 	const messages = ref<Array<WebRTCMessage>>([]);
@@ -73,8 +72,8 @@ export const useWebRTCStore = defineStore("WebRTC", () => {
 		connection.on("data", handleDataConnectionData);
 	};
 
+	// 獲取我的視訊
 	const getLocalMedia = async () => {
-		// 獲取我的視訊
 		const stream = await navigator.mediaDevices.getUserMedia({
 			video: true,
 			audio: true,

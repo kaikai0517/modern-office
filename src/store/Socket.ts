@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import { useMessage } from "naive-ui";
-import { SocketMessage } from "../model/schema";
+import { SocketMessage, PlayerInfo } from "../model/schema";
 
 export const useSocketStore = defineStore("socket", () => {
 	interface player {
@@ -9,17 +9,19 @@ export const useSocketStore = defineStore("socket", () => {
 		WebRTCId: string;
 		onLine: boolean;
 		name: string;
-		player: {
-			positionX: number;
-			positionY: number;
-			width: number;
-			height: number;
-		};
+		player: PlayerInfo;
 	}
 
 	const message = useMessage();
 
+	/**
+	 * 建立socket
+	 */
 	const ws = new WebSocket("wss://modern-office-api.onrender.com");
+
+	/**
+	 * 本地人物
+	 */
 	const localPlayer = ref<player>({
 		id: "",
 		WebRTCId: "",
@@ -30,24 +32,52 @@ export const useSocketStore = defineStore("socket", () => {
 			positionY: 0,
 			width: 0,
 			height: 0,
+			currentMovement: {
+				move: 0,
+				moveTimes: 0,
+			},
 		},
 	});
+
+	/**
+	 * 遠端人物
+	 */
 	const remotePlayers = ref<Array<player>>([]);
 
+	/**
+	 * socket訊息
+	 */
 	const messages = ref<Array<SocketMessage>>([]);
 
+	/**
+	 * 人物是否離線
+	 */
 	const onLine = ref(true);
 
+	/**
+	 * socket是否開啟
+	 */
 	const SocketOn = ref(false);
 
-	// 人物圖片位置
+	/**
+	 * 人物圖片位置
+	 */
 	const PERSONSRC = "/canva/person/Adam_run_16x16.png";
 
+	/**
+	 * 遠端人物Map
+	 */
 	const remotePlayerMap = ref();
 	remotePlayerMap.value = new Map();
 
-	const isTypingName = ref(false);
+	/**
+	 * 是否在輸入訊息
+	 */
+	const isTyping = ref(false);
 
+	/**
+	 * 監聽socket開啟
+	 */
 	ws.onopen = async () => {
 		setPlayerId();
 		sentLoginMessage();
@@ -56,30 +86,51 @@ export const useSocketStore = defineStore("socket", () => {
 		console.log("open connection");
 	};
 
+	/**
+	 * 監聽socket關閉
+	 */
 	ws.onclose = () => {
 		SocketOn.value = false;
 		console.log("close connection");
 	};
 
+	/**
+	 * 注入人物UUID
+	 */
 	const setPlayerId = () => {
 		localPlayer.value.id = uuidv4();
 	};
 
+	/**
+	 * 發送登入訊息
+	 */
 	const sentLoginMessage = () => {
 		ws.send(JSON.stringify({ login: `${localPlayer.value.id} Login` }));
 	};
 
+	/**
+	 * 離線
+	 */
 	const OffLine = () => {
 		onLine.value = false;
 		sendPlayer();
 	};
 
+	/**
+	 * 網頁關閉或重整監聽
+	 */
 	window.onbeforeunload = () => {
 		OffLine();
 	};
 
+	/**
+	 * 判斷是不是本地用戶
+	 */
 	const isLocal = (id: string) => id === localPlayer.value.id;
 
+	/**
+	 * 更改已存在人物資訊
+	 */
 	const setCurrentPlayer = (currentPlayer: player) => {
 		remotePlayerMap.value.set(currentPlayer.id, {
 			image: remotePlayerMap.value.get(currentPlayer.id).image,
@@ -87,6 +138,9 @@ export const useSocketStore = defineStore("socket", () => {
 		});
 	};
 
+	/**
+	 * 新增遠端人物
+	 */
 	const setNewPlayer = (newPlayer: player) => {
 		const image = new Image();
 		image.src = PERSONSRC;
@@ -96,6 +150,9 @@ export const useSocketStore = defineStore("socket", () => {
 		});
 	};
 
+	/**
+	 * 設定人物相關流程
+	 */
 	const setPlayer = (player: player) => {
 		if (isLocal(player.id)) {
 			return;
@@ -109,6 +166,16 @@ export const useSocketStore = defineStore("socket", () => {
 		}
 	};
 
+	/**
+	 * 注入人物資訊
+	 */
+	const injectPlayer = (player: PlayerInfo) => {
+		localPlayer.value.player = player;
+	};
+
+	/**
+	 * 送出人物
+	 */
 	const sendPlayer = () => {
 		const data = JSON.stringify({
 			...localPlayer.value,
@@ -117,6 +184,9 @@ export const useSocketStore = defineStore("socket", () => {
 		ws.send(data);
 	};
 
+	/**
+	 * 發送全頻聊天室訊息
+	 */
 	const sendAllMessages = (message: string) => {
 		ws.send(
 			JSON.stringify({
@@ -127,7 +197,10 @@ export const useSocketStore = defineStore("socket", () => {
 		);
 	};
 
-	const handleMessage = () => {
+	/**
+	 * 監聽socket訊息
+	 */
+	const handleSocketMessage = () => {
 		//接收 Server 發送的訊息
 		ws.onmessage = (event) => {
 			const reader = new FileReader();
@@ -154,13 +227,14 @@ export const useSocketStore = defineStore("socket", () => {
 		sendPlayer,
 		sentLoginMessage,
 		OffLine,
-		handleMessage,
+		handleSocketMessage,
 		sendAllMessages,
 		isLocal,
+		injectPlayer,
 		localPlayer,
 		remotePlayers,
 		remotePlayerMap,
-		isTypingName,
+		isTyping,
 		SocketOn,
 		messages,
 	};

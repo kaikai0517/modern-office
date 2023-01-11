@@ -49,3 +49,7 @@ export interface SocketMessage {
 }
 
 export type MessageType = "local" | "remote" | "notify";
+
+export type MoveType = "UP" | "LEFT" | "DOWN" | "RIGHT";
+
+export type PressType = "keydown" | "keyup";

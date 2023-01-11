@@ -4,6 +4,7 @@
 			ref="chat"
 			class="pt-3 px-3 pb-6 group-hover:border-solid group-hover:border-[1px] group-hover:border-white h-[150px] opacity-50 group-hover:opacity-100 overflow-hidden group-hover:overflow-auto"
 		>
+			<!-- 全頻聊天室 -->
 			<div
 				:class="isLocal(item.id) ? 'text-right' : 'text-left text-yellow-200'"
 				v-for="item in messages"
@@ -15,13 +16,14 @@
 		<div
 			class="flex w-full border-[1px] border-white border-solid items-center"
 		>
+			<!-- 輸入匡 -->
 			<n-input
 				v-model:value="message"
 				autosize
 				type="textarea"
 				placeholder="請輸入文字"
-				@blur="isTypingName = false"
-				@focus="isTypingName = true"
+				@blur="isTyping = false"
+				@focus="isTyping = true"
 			/><NButton type="error" @click="send"> Send </NButton>
 		</div>
 	</div>
@@ -32,20 +34,34 @@ import { NButton, NInput } from "naive-ui";
 import { storeToRefs } from "pinia";
 import { useSocketStore } from "../store/Socket";
 
+/**
+ * 送出文字
+ */
 const message = ref("");
 
+/**
+ * 聊天室div
+ */
 const chat = ref();
 
-// socketStore
+/**
+ * socketStore
+ */
 const socketStore = useSocketStore();
-const { isTypingName, messages } = storeToRefs(socketStore);
+const { isTyping, messages } = storeToRefs(socketStore);
 const { sendAllMessages, isLocal } = socketStore;
 
+/**
+ * 送出全頻聊天室
+ */
 const send = () => {
 	sendAllMessages(message.value);
 	message.value = "";
 };
 
+/**
+ * 有新訊息就讓聊天室scroll在最底部
+ */
 watch(messages.value, () => {
 	if (chat.value) {
 		chat.value.scrollTop = chat.value.scrollHeight;

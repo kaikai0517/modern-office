@@ -16,10 +16,15 @@
 import { useWebRTCStore } from "../store/WebRTC";
 import { storeToRefs } from "pinia";
 
+/**
+ * 視頻寬高
+ */
 const VIDEOWIDTH = "200";
 const VIDEOHEIGHT = "200";
 
-// socketStore
+/**
+ * WebRTCStore
+ */
 const webRTCStore = useWebRTCStore();
 const { localVideo, isConnect } = storeToRefs(webRTCStore);
 </script>

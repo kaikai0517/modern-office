@@ -24,18 +24,28 @@ import { useSocketStore } from "../store/Socket";
 import { storeToRefs } from "pinia";
 import { useWebRTCStore } from "../store/WebRTC";
 
-// socketStore
+/**
+ * socketStore
+ */
 const socketStore = useSocketStore();
-const { handleMessage, sendPlayer } = socketStore;
+const { handleSocketMessage, sendPlayer } = socketStore;
 
-// webRTCStore
+/**
+ * WebRTCStore
+ */
 const webRTCStore = useWebRTCStore();
 const { WebRTCConnect } = storeToRefs(webRTCStore);
 
+/**
+ * 監聽socket訊息
+ */
 onMounted(() => {
-	handleMessage();
+	handleSocketMessage();
 });
 
+/**
+ * WevRTC建立完畢送出人物
+ */
 watch(
 	() => WebRTCConnect.value,
 	() => {
