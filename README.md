@@ -76,7 +76,7 @@ back-end
 
 你可以透過以下方式與我聯絡
 
-- [Email](kai880517@gmail.com)
-- [phone](0968796370)
+- [Email]：kai880517@gmail.com
+- [phone]：0968796370
 - [LinkedIn](https://www.linkedin.com/in/%E5%87%B1%E9%8A%98-%E9%99%B3-4798b3213/)
 ...
